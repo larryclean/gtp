@@ -78,8 +78,33 @@ func (p Position) GetCoor(x, y int32) int32 {
 
 // Move 落子
 func (p *Position) Move(x, y, c int32) (bool, int) {
-	p.SetPosition(x, y, c)
-	return p.CheckDead(x, y, c)
+	newPos,_:=p.Clone()
+	newPos.SetPosition(x, y, c)
+	//return p.CheckDead(x, y, c)
+	nodes := newPos.CheckDead(x, y, c)
+	cnt := len(nodes)
+	if cnt > 0 {
+		p.CapStones(nodes)
+	}
+	if cnt == 1 {
+		p.HisNode = nodes[0]
+	}
+	return cnt > 0, cnt
+}
+
+func (p *Position) CapStones(nodes []KNode) {
+	black := 0
+	white := 0
+	for _, v := range nodes {
+		if v.C == B {
+			black++
+		} else if v.C == W {
+			white++
+		}
+		p.SetPosition(v.X, v.Y, Empty)
+	}
+	p.BlackCap = p.BlackCap + black
+	p.WhiteCap = p.WhiteCap + white
 }
 
 // ResetKO 重置打劫
@@ -99,49 +124,37 @@ func (p *Position) CheckKO(x, y, c int32, deadcount int) bool {
 }
 
 //校验死子
-func (p *Position) CheckDead(x, y, c int32) (bool, int) {
+func (p *Position) CheckDead(x, y, c int32) []KNode {
 	otherColor := int32(Empty)
-	myColor := c
+	otherColor = int32(B)
 	if c == 1 {
 		otherColor = int32(W)
-	} else {
-		otherColor = int32(B)
 	}
-	isKill := false
-	deadCount := 0
+	nodes := make([]KNode, 0)
 	//up
 	if y > 0 && p.GetPosition(x, y-1) == int32(otherColor) {
-		isKill, deadCount = p.CalcDead(x, y-1, otherColor)
+		p.CalcDeadNotCap(x, y-1, otherColor, nodes)
 	}
 	//left
 	if x > 0 && p.GetPosition(x-1, y) == int32(otherColor) {
-		isKill, deadCount = p.CalcDead(x-1, y, otherColor)
+		p.CalcDeadNotCap(x-1, y, otherColor, nodes)
 	}
 	//down
 	if y < p.Size-1 && p.GetPosition(x, y+1) == int32(otherColor) {
-		isKill, deadCount = p.CalcDead(x, y+1, otherColor)
+		p.CalcDeadNotCap(x, y+1, otherColor, nodes)
 	}
 	//right
 	if x < p.Size-1 && p.GetPosition(x+1, y) == int32(otherColor) {
-		isKill, deadCount = p.CalcDead(x+1, y, otherColor)
+		p.CalcDeadNotCap(x+1, y, otherColor, nodes)
 	}
-	if !isKill {
-		p.CalcDead(x, y, myColor)
-	}
-	if deadCount != 1 {
-		p.HisNode = KNode{
-			X: -1,
-			Y: -1,
-		}
-	}
-	return isKill, deadCount
+
+	return nodes
 }
 
-// CalcDead 计算死子如果有死子则提子
-func (p *Position) CalcDead(x, y, c int32) (bool, int) {
+//计算死子但不提子
+func (p *Position) CalcDeadNotCap(x, y, c int32, nodes []KNode) {
 	temp_pos := NewPosition(p.Size)
 	isDead := true
-	deadCount := 0
 	temp_pos = p.FindAreaByC(temp_pos, x, y, c)
 	for i := int32(0); i < p.Size; i++ {
 		for j := int32(0); j < p.Size; j++ {
@@ -154,22 +167,16 @@ func (p *Position) CalcDead(x, y, c int32) (bool, int) {
 		for i := int32(0); i < p.Size; i++ {
 			for j := int32(0); j < p.Size; j++ {
 				if temp_pos.GetPosition(i, j) == c {
-					p.SetPosition(i, j, 0)
-					deadCount++
-					p.HisNode = KNode{
+					p.SetPosition(i,j,Empty)
+					nodes = append(nodes, KNode{
 						X: i,
 						Y: j,
-					}
+						C: c,
+					})
 				}
 			}
 		}
-		if c == W {
-			p.BlackCap = p.BlackCap + deadCount
-		} else if c == B {
-			p.WhiteCap = p.WhiteCap + deadCount
-		}
 	}
-	return deadCount > 0, deadCount
 }
 
 // FindAreaByC 查找区域连块逻辑
