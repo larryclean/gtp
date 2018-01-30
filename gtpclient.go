@@ -77,7 +77,9 @@ func (self GTPClient) ClearBoard() (string, error) {
 func (self GTPClient) PrintSgf() (string, error) {
 	return self.conn.Exec("printsgf")
 }
-
+func (self GTPClient) TimeSetting(baseTime,byoTime,byoStones int) (string, error) {
+	return self.conn.Exec(fmt.Sprintf("time_settings %d %d %d",baseTime,byoTime,byoStones))
+}
 func (self GTPClient) FinalScore() (string, error) {
 	return self.conn.Exec("final_score")
 }
