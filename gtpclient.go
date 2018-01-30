@@ -41,6 +41,16 @@ func (self GTPClient) GenMove(color string) (string, error) {
 	}
 	return self.conn.Exec(command)
 }
+func (self GTPClient) Move(color, coor string) (string, error) {
+	color = strings.ToUpper(color)
+	command := "black"
+	if color == "B" {
+		command = "black"
+	} else if color == "W" {
+		command = "white"
+	}
+	return self.conn.Exec(fmt.Sprintf("play %s %s", command, coor))
+}
 
 func (self GTPClient) LoadSgf(file string, move int) (string, error) {
 	command := fmt.Sprintf("loadsgf %s", file)
