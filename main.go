@@ -4,8 +4,8 @@ import (
 	"github.com/larry-dev/gtp/sgf"
 )
 
-func GetKifu(s string) sgf.Kifu {
-	kifu := sgf.ParseSgf("(;SZ[19])")
+func GetLastKifu(s string) sgf.Kifu {
+	kifu := sgf.ParseSgf(s)
 	kifu.Last()
 	return kifu
 }

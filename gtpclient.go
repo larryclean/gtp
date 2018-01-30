@@ -74,6 +74,9 @@ func (self GTPClient) ShowBoard() (string, error) {
 func (self GTPClient) ClearBoard() (string, error) {
 	return self.conn.Exec("clear_board")
 }
+func (self GTPClient) PrintSgf() (string, error) {
+	return self.conn.Exec("printsgf")
+}
 
 func (self GTPClient) FinalScore() (string, error) {
 	return self.conn.Exec("final_score")
