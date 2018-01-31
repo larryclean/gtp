@@ -86,3 +86,7 @@ func (self GTPClient) FinalScore() (string, error) {
 func (self GTPClient) Quit() (string, error) {
 	return self.conn.Exec("Quit")
 }
+
+func (self GTPClient) SendCmd(cmd string)(string,error)  {
+	return self.conn.Exec(cmd)
+}
