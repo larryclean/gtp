@@ -49,6 +49,10 @@ func (self GTPConnection) Exec(cmd string) (string, error) {
 		}
 		if line == "\n" {
 			break
+		}else if line=="\r\n"{
+			break
+		}else if line=="\n"{
+			break
 		}
 		result += line
 	}
