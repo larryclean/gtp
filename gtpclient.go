@@ -17,7 +17,7 @@ func NewGtpClient(conn *GTPConnection) *GTPClient {
 	if strings.Contains(ver, "ERROR") {
 		util.protocol_version = ver
 	} else {
-		util.protocol_version = "1"
+		util.protocol_version = "2"
 	}
 	return &util
 }
