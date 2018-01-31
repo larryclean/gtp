@@ -9,7 +9,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"tengen/utils"
 )
 
 func DeepCopy(dst, src interface{}) error {
@@ -101,8 +100,7 @@ func ParseMove(ss string, size int32) []KNode {
 				xInt = xInt - 1
 			}
 
-			y, err := strconv.Atoi(string(v[1:]))
-			utils.CheckError(err)
+			y, _ := strconv.Atoi(string(v[1:]))
 			yInt := size - int32(y)
 			pos := KNode{
 				X: xInt - 97,
