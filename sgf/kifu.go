@@ -35,7 +35,9 @@ func (k *Kifu) GoTo(move int) Position {
 func (k *Kifu) Last() Position {
 	return k.GoTo(100000)
 }
-
+func(k *Kifu) AppendNode(node KNode)  {
+	k.Nodes=append(k.Nodes,node)
+}
 func (k *Kifu) ToSGF(move int) (sgf string) {
 	sgfHeader := fmt.Sprintf(";SZ[%d]KM[%d]HA[%d]", k.Size,k.Komi,k.Handicap)
 	if move > len(k.Nodes) || move == -1 {
