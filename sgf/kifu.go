@@ -37,6 +37,7 @@ func (k *Kifu) Last() Position {
 }
 func(k *Kifu) AppendNode(node KNode)  {
 	k.Nodes=append(k.Nodes,node)
+	k.NodeCount++
 }
 func (k *Kifu) ToSGF(move int) (sgf string) {
 	sgfHeader := fmt.Sprintf(";SZ[%d]KM[%d]HA[%d]", k.Size,k.Komi,k.Handicap)
