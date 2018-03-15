@@ -10,7 +10,7 @@ type Position struct {
 	Size     int32
 	BlackCap int
 	WhiteCap int
-	HisNode  KNode
+	HisNode  Node
 }
 
 func NewPosition(size int32) Position {
@@ -33,32 +33,32 @@ func (p Position) CreateSchema() []int32 {
 	poss := make([]int32, p.Size*p.Size)
 	return poss
 }
-func (p Position) Neighbar4(x, y int32) []KNode {
-	result := make([]KNode, 0)
+func (p Position) Neighbar4(x, y int32) []Node {
+	result := make([]Node, 0)
 	// up
 	if y > 0 {
-		result = append(result, KNode{
+		result = append(result, Node{
 			X: x,
 			Y: y - 1,
 		})
 	}
 	//left
 	if x > 0 {
-		result = append(result, KNode{
+		result = append(result, Node{
 			X: x - 1,
 			Y: y,
 		})
 	}
 	//down
 	if y < p.Size-1 {
-		result = append(result, KNode{
+		result = append(result, Node{
 			X: x,
 			Y: y + 1,
 		})
 	}
 	//right
 	if x < p.Size-1 {
-		result = append(result, KNode{
+		result = append(result, Node{
 			X: x + 1,
 			Y: y,
 		})
@@ -83,6 +83,7 @@ func (p *Position) Move(x, y, c int32) (bool, int) {
 	//return p.CheckDead(x, y, c)
 	nodes := newPos.CheckDead(x, y, c)
 	cnt := len(nodes)
+	p.SetPosition(x,y,c)
 	if cnt > 0 {
 		p.CapStones(nodes)
 	}
@@ -92,7 +93,7 @@ func (p *Position) Move(x, y, c int32) (bool, int) {
 	return cnt > 0, cnt
 }
 
-func (p *Position) CapStones(nodes []KNode) {
+func (p *Position) CapStones(nodes []Node) {
 	black := 0
 	white := 0
 	for _, v := range nodes {
@@ -110,7 +111,7 @@ func (p *Position) CapStones(nodes []KNode) {
 // ResetKO 重置打劫
 func (p *Position) ResetKO(x, y, c int32) {
 	if p.HisNode.C == c && (p.HisNode.X != x || p.HisNode.Y != y) {
-		p.HisNode = KNode{}
+		p.HisNode = Node{}
 	}
 }
 
@@ -124,13 +125,13 @@ func (p *Position) CheckKO(x, y, c int32, deadcount int) bool {
 }
 
 //校验死子
-func (p *Position) CheckDead(x, y, c int32) []KNode {
+func (p *Position) CheckDead(x, y, c int32) []Node {
 	otherColor := int32(Empty)
 	otherColor = int32(B)
 	if c == 1 {
 		otherColor = int32(W)
 	}
-	nodes := make([]KNode, 0)
+	nodes := make([]Node, 0)
 	//up
 	if y > 0 && p.GetPosition(x, y-1) == int32(otherColor) {
 		p.CalcDeadNotCap(x, y-1, otherColor, nodes)
@@ -152,7 +153,7 @@ func (p *Position) CheckDead(x, y, c int32) []KNode {
 }
 
 //计算死子但不提子
-func (p *Position) CalcDeadNotCap(x, y, c int32, nodes []KNode) {
+func (p *Position) CalcDeadNotCap(x, y, c int32, nodes []Node) {
 	temp_pos := NewPosition(p.Size)
 	isDead := true
 	temp_pos = p.FindAreaByC(temp_pos, x, y, c)
@@ -168,7 +169,7 @@ func (p *Position) CalcDeadNotCap(x, y, c int32, nodes []KNode) {
 			for j := int32(0); j < p.Size; j++ {
 				if temp_pos.GetPosition(i, j) == c {
 					p.SetPosition(i,j,Empty)
-					nodes = append(nodes, KNode{
+					nodes = append(nodes, Node{
 						X: i,
 						Y: j,
 						C: c,
@@ -216,7 +217,7 @@ func (p Position) FindAreaByC(pos Position, x, y, c int32) Position {
 }
 
 // SetDead 设置死子
-func (p *Position) SetDead(nodes []KNode) {
+func (p *Position) SetDead(nodes []Node) {
 	for _, v := range nodes {
 		color := p.GetPosition(v.X, v.Y)
 		if color == B {
@@ -229,7 +230,7 @@ func (p *Position) SetDead(nodes []KNode) {
 	}
 }
 
-func (p *Position) SetColor(nodes []KNode, color int32) {
+func (p *Position) SetColor(nodes []Node, color int32) {
 	for _, v := range nodes {
 		if p.GetPosition(v.X, v.Y) != 0 && color != p.GetPosition(v.X, v.Y) {
 			if color == B {
@@ -370,18 +371,18 @@ func (p Position) PrintBoard() []string {
 			} else if p.GetPosition(j, i) == -1 {
 				arr = append(arr, "O")
 			} else {
-				arr = append(arr, " ")
+				arr = append(arr, "-")
 			}
 		}
 		result = append(result, strings.Join(arr, " "))
 	}
 	return result
 }
-func (p Position) getNextMove(x, y, c int32, deadCount int, hisNode KNode) (*KNode, int) {
+func (p Position) getNextMove(x, y, c int32, deadCount int, hisNode Node) (*Node, int) {
 	kill, cnt := p.Move(x, y, c)
 	if kill {
 		if p.CheckKO(x, y, c, deadCount) && cnt > deadCount {
-			return &KNode{
+			return &Node{
 				X: x,
 				Y: y,
 				C: c,
@@ -391,10 +392,10 @@ func (p Position) getNextMove(x, y, c int32, deadCount int, hisNode KNode) (*KNo
 	p.SetPosition(x, y, Empty)
 	return nil, 0
 }
-func (op Position) CalcCap(color int32) *KNode {
+func (op Position) CalcCap(color int32) *Node {
 	p, _ := op.Clone()
 	deadCount := 0
-	result := &KNode{}
+	result := &Node{}
 	for i := int32(0); i < p.Size; i++ {
 		for j := int32(0); j < p.Size; j++ {
 			n := p.GetPosition(i, j)

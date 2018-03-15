@@ -3,14 +3,30 @@ package sgf
 import (
 	"regexp"
 	"strconv"
-	"strings"
 )
 
-// 解析每个子的坐标
-func parseNode(kifu Kifu, value string, indent string) KNode {
-	node := KNode{}
+func abaw(kifu Kifu, node *Node, value string, indent string) {
 	c := W
-	if indent == "B" || indent == "AB" {
+	if indent == "AB" {
+		c = B
+	} else {
+		c = W
+	}
+	node1 := &Node{}
+	if len(value) == 0 || (kifu.Size <= 19 && value == "tt") {
+		node1.C = int32(c)
+		node1.X = int32(-1)
+		node1.Y = int32(-1)
+	} else {
+		node1.C = int32(c)
+		node1.X = ToNum(value, 0)
+		node1.Y = ToNum(value, 1)
+	}
+	node.AddSetup(node1)
+}
+func bw(kifu Kifu, node *Node, value string, indent string) {
+	c := W
+	if indent == "B" {
 		c = B
 	} else {
 		c = W
@@ -24,16 +40,26 @@ func parseNode(kifu Kifu, value string, indent string) KNode {
 		node.X = ToNum(value, 0)
 		node.Y = ToNum(value, 1)
 	}
-	return node
 }
+
+var properties = map[string]func(kifu Kifu, node *Node, value string, indent string){
+	"AB": abaw,
+	"AW": abaw,
+	"B":  bw,
+	"W":  bw,
+}
+
+//解析SGF 生成树状结构数据
 func ParseSgf(sgf string) Kifu {
-	stack := make([]KNode, 0, 5)
+	stack := make([]*Node, 0)
+	var node *Node
 	kifu := Kifu{
 		Komi:     7.5,
 		Handicap: 0,
 		Size:     19,
 		CurColor: B,
 		SgfStr:   sgf,
+		Root:     NewNode(),
 	}
 	//解析SGF文件
 	reg_seq := regexp.MustCompile(pat_seq)
@@ -44,11 +70,21 @@ func ParseSgf(sgf string) Kifu {
 	sequence := reg_seq.FindAllString(sgf, -1)
 	for _, v := range sequence {
 		if v == "(" {
+			stack = append(stack, node)
 			continue
 		} else if v == ")" {
+			ll:=len(stack)
+			node = stack[ll-1]
+			if ll>1{
+				stack=stack[:ll-1]
+			}
 			continue
 		}
-
+ 		if (node==nil){
+ 			node=kifu.Root
+		}else{
+			node=node.AppendChild()
+		}
 		props := reg_node.FindAllString(v, -1)
 		for _, v1 := range props {
 			indent := reg_indent.FindString(v1)
@@ -57,17 +93,9 @@ func ParseSgf(sgf string) Kifu {
 				v2 = reg_re.ReplaceAllString(v2[1:len(v2)-1], "")
 				vals[i] = v2
 			}
-			if indent == "B" || indent == "W" {
+			if indent == "B" || indent == "W"||indent == "AW" || indent == "AB" {
 				for _, v10 := range vals {
-					node := parseNode(kifu, v10, indent)
-					stack = append(stack, node)
-					kifu.NodeCount += 1
-				}
-			}
-			if indent == "AW" || indent == "AB" {
-				for _, v10 := range vals {
-					node := parseNode(kifu, v10, indent)
-					stack = append(stack, node)
+					properties[indent](kifu,node,v10,indent)
 					kifu.NodeCount += 1
 				}
 			}
@@ -95,50 +123,9 @@ func ParseSgf(sgf string) Kifu {
 		}
 
 	}
-	kifu.Nodes = stack
 	if kifu.Size == 0 {
 		kifu.Size = 19
 	}
 	return kifu
 }
 
-// ParseABAW 转化形势判断
-func ParseABAW(ab, aw string, komi float32, size int32, handicap int) Kifu {
-	stack := make([]KNode, 0, 5)
-	kifu := Kifu{
-		Komi:     komi,
-		Handicap: handicap,
-		Size:     size,
-		CurColor: B,
-		SgfStr:   "",
-	}
-	bList := strings.Split(ab, ":")
-	wList := strings.Split(aw, ":")
-	step := len(bList)
-	if step < len(wList) {
-		step = len(wList)
-	}
-	for i := 0; i < step; i++ {
-		if i >= len(bList) {
-			node := parseNode(kifu, "tt", "B")
-			stack = append(stack, node)
-			kifu.NodeCount += 1
-		} else {
-			node := parseNode(kifu, bList[i], "B")
-			stack = append(stack, node)
-			kifu.NodeCount += 1
-		}
-		if i >= len(wList) {
-			node := parseNode(kifu, "tt", "W")
-			stack = append(stack, node)
-			kifu.NodeCount += 1
-		} else {
-			node := parseNode(kifu, wList[i], "W")
-			stack = append(stack, node)
-			kifu.NodeCount += 1
-		}
-
-	}
-	kifu.Nodes = stack
-	return kifu
-}

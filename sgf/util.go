@@ -6,7 +6,6 @@ import (
 	"encoding/gob"
 	"fmt"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 )
@@ -30,7 +29,7 @@ func ToNum(value string, index int) int32 {
 func IntToChar(x int32) string {
 	return fmt.Sprintf("%s", string(x+97))
 }
-func NodeToString(node KNode) string {
+func NodeToString(node Node) string {
 	xChar := IntToChar(node.X)
 	yChar := IntToChar(node.Y)
 	if node.X == -1 {
@@ -46,6 +45,18 @@ func NodeToString(node KNode) string {
 		return fmt.Sprintf(";W[%s%s]", xChar, yChar)
 	}
 	return ""
+}
+func CoorToStr(x, y int32) string {
+	xChar := IntToChar(x)
+	yChar := IntToChar(y)
+	if x == -1 {
+		xChar = "t"
+	}
+
+	if y == -1 {
+		yChar = "t"
+	}
+	return fmt.Sprintf("[%s%s]", xChar, yChar)
 }
 
 // SaveStringToPath 保存字符串到文件
@@ -77,62 +88,7 @@ func RemoveByPath(path string) error {
 	return nil
 }
 
-// parseMove 解析AI节点
-func ParseMove(ss string, size int32) []KNode {
-	result := make([]KNode, 0, 5)
-	pat := `\s+`
-	reg := regexp.MustCompile(pat)
-	list := reg.Split(ss, -1)
-	for _, v := range list {
-		if len(v) > 0 {
-			temp := strings.ToLower(string(v[0]))
-			if v == "PASS" {
-				pos := KNode{
-					X: -1,
-					Y: -1,
-				}
-				result = append(result, pos)
-				continue
-			}
-			xr := []rune(temp)
-			xInt := xr[0]
-			if xInt > 105 {
-				xInt = xInt - 1
-			}
 
-			y, _ := strconv.Atoi(string(v[1:]))
-			yInt := size - int32(y)
-			pos := KNode{
-				X: xInt - 97,
-				Y: yInt,
-			}
-			result = append(result, pos)
-		}
-	}
-	return result
-}
-
-// ParseScore 解析AI Result
-func ParseResult(list []string) []string {
-	value := make([]string, 0, 5)
-	temp := ""
-	for i, v := range list {
-		v = strings.TrimSpace(v)
-		if len(v) > 0 {
-			if strings.Contains(v, "=") {
-				if i > 0 {
-					value = append(value, temp)
-					temp = ""
-				}
-				temp = strings.TrimSpace(strings.Replace(v, "=", "", -1))
-			} else {
-				temp = fmt.Sprintf("%s %s", temp, strings.TrimSpace(v))
-			}
-		}
-	}
-	value = append(value, temp)
-	return value
-}
 func ParseRegion(m string) []Region {
 	r1 := strings.Split(m, ";")
 	regions := make([]Region, 0)

@@ -10,3 +10,5 @@ const (
 	Empty     = 0
 	NOTHING   = -2
 )
+
+var InfoList = [...]string{"black", "white", "AN", "CP", "DT", "EV", "GN", "GC", "HA", "ON", "OT", "RE", "RO", "RU", "SO", "TM", "US", "PC", "KM",}

@@ -18,8 +18,3 @@ func TestKifu_ToSGF(t *testing.T) {
 	}
 }
 
-func TestKifu_ToSGF2(t *testing.T) {
-	kifu := ParseABAW("aa:bb:cc:dd", "ee:gg", 7.5, 19, 0)
-	ss := kifu.ToSGF(-1)
-	t.Log(ss)
-}
