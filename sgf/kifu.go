@@ -15,6 +15,7 @@ type Kifu struct {
 	NodeCount int
 	CurPos    Position
 	CurPath   int
+	CurNode   *Node
 }
 
 func (k *Kifu) GoTo(move int) Position {
@@ -34,6 +35,7 @@ func (k *Kifu) GoTo(move int) Position {
 			pos.Move(temp.X, temp.Y, temp.C)
 			pos.ResetKO(temp.X, temp.Y, temp.C)
 			node = temp
+			k.CurNode = node
 		} else {
 			break;
 		}
@@ -78,6 +80,21 @@ func (k Kifu) WriteVarian(node *Node, s string) string {
 	s = k.WriteNode(node, s)
 	s += ")"
 	return s
+}
+func (k Kifu) ToCurSgf() string {
+	sss := "" // fmt.Sprintf("(;SZ[%v]KM[%v]HA[%v]", k.Size, k.Komi, k.Handicap)
+	temp := *k.CurNode
+	node := &temp
+	for {
+		sss = fmt.Sprintf("%s%s", node.GetSgfMove(), sss)
+		node = node.Parent
+		if node.Parent == nil {
+			break;
+		}
+	}
+	ss := getSetup(node.Steup, "")
+	sss = fmt.Sprintf("(;SZ[%v]KM[%v]HA[%v]%s%s)", k.Size, k.Komi, k.Handicap, ss, sss)
+	return sss
 }
 func (k Kifu) GetCleanSgf() []string {
 	result := make([]string, 0)

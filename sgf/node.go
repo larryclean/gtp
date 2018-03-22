@@ -1,13 +1,14 @@
 package sgf
 
+import "fmt"
 
 type Node struct {
-	X         int32
-	Y         int32
-	C         int32
-	Parent    *Node
-	Childrens []*Node
-	Steup     []*Node
+	X          int32
+	Y          int32
+	C          int32
+	Parent     *Node
+	Childrens  []*Node
+	Steup      []*Node
 	LastSelect int
 }
 
@@ -25,14 +26,14 @@ func (n Node) GetChild(i int) *Node {
 		return n.Childrens[i]
 	}
 }
-func (n *Node) AppendChild()*Node  {
-	node:=NewNode()
-	node.Parent=n
-	n.Childrens=append(n.Childrens, node)
+func (n *Node) AppendChild() *Node {
+	node := NewNode()
+	node.Parent = n
+	n.Childrens = append(n.Childrens, node)
 	return node
 }
-func (n *Node) AddSetup(obj *Node)  {
-	n.Steup=append(n.Steup, obj)
+func (n *Node) AddSetup(obj *Node) {
+	n.Steup = append(n.Steup, obj)
 }
 
 func (k Node) GetXSizeCoor(size int32) int32 {
@@ -40,4 +41,13 @@ func (k Node) GetXSizeCoor(size int32) int32 {
 }
 func (k Node) GetYSizeCoor(size int32) int32 {
 	return k.Y*size + k.X
+}
+func (k Node) GetSgfMove() string {
+	if k.C == B {
+		return fmt.Sprintf(";B%s", CoorToStr(k.X, k.Y))
+	} else if k.C == W {
+		return fmt.Sprintf(";W%s", CoorToStr(k.X, k.Y))
+	} else {
+		return ""
+	}
 }
