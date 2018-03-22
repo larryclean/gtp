@@ -23,7 +23,8 @@ func (k *Kifu) GoTo(move int) Position {
 	if move > k.NodeCount || move == -1 {
 		move = k.NodeCount
 	}
-	node := k.Root
+	temp := *k.Root
+	node := &temp
 	for i := 0; i < move; i++ {
 		if len(node.Steup) > 0 {
 			for _, v := range node.Steup {
@@ -50,7 +51,8 @@ func (k *Kifu) Last() Position {
 }
 func (k Kifu) ToSgf() string {
 	sss := fmt.Sprintf("(;SZ[%v]KM[%v]HA[%v]", k.Size, k.Komi, k.Handicap)
-	node := k.Root
+	temp := *k.Root
+	node := &temp
 	//sss = getSetup(node.Steup, sss)
 	sss += k.WriteNode(node, "")
 	sss += ")"
