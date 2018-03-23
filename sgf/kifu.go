@@ -25,6 +25,7 @@ func (k *Kifu) GoTo(move int) Position {
 	}
 	temp := *k.Root
 	node := &temp
+	k.CurNode = node
 	for i := 0; i < move; i++ {
 		if len(node.Steup) > 0 {
 			for _, v := range node.Steup {
