@@ -90,10 +90,10 @@ func (k Kifu) ToCurSgf() string {
 	node := &temp
 	for {
 		sss = fmt.Sprintf("%s%s", node.GetSgfMove(), sss)
-		node = node.Parent
 		if node.Parent == nil {
 			break;
 		}
+		node = node.Parent
 	}
 	ss := getSetup(node.Steup, "")
 	sss = fmt.Sprintf("(;SZ[%v]KM[%v]HA[%v]%s%s)", k.Size, k.Komi, k.Handicap, ss, sss)
