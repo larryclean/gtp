@@ -67,10 +67,16 @@ func (p Position) Neighbar4(x, y int32) []Node {
 }
 
 func (p *Position) SetPosition(x, y, c int32) {
-	p.Schema[x*p.Size+y] = c
+	if x >= 0 && y >= 0 {
+		p.Schema[x*p.Size+y] = c
+	}
+
 }
 func (p Position) GetPosition(x, y int32) int32 {
-	return p.Schema[x*p.Size+y]
+	if x >= 0 && y >= 0 {
+		return p.Schema[x*p.Size+y]
+	}
+	return 0
 }
 func (p Position) GetCoor(x, y int32) int32 {
 	return x*p.Size + y
@@ -78,12 +84,12 @@ func (p Position) GetCoor(x, y int32) int32 {
 
 // Move 落子
 func (p *Position) Move(x, y, c int32) (bool, int) {
-	newPos,_:=p.Clone()
+	newPos, _ := p.Clone()
 	newPos.SetPosition(x, y, c)
 	//return p.CheckDead(x, y, c)
 	nodes := newPos.CheckDead(x, y, c)
 	cnt := len(nodes)
-	p.SetPosition(x,y,c)
+	p.SetPosition(x, y, c)
 	if cnt > 0 {
 		p.CapStones(nodes)
 	}
@@ -168,7 +174,7 @@ func (p *Position) CalcDeadNotCap(x, y, c int32, nodes []Node) {
 		for i := int32(0); i < p.Size; i++ {
 			for j := int32(0); j < p.Size; j++ {
 				if temp_pos.GetPosition(i, j) == c {
-					p.SetPosition(i,j,Empty)
+					p.SetPosition(i, j, Empty)
 					nodes = append(nodes, Node{
 						X: i,
 						Y: j,
