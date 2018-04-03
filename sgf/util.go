@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"regexp"
 )
 
 func DeepCopy(dst, src interface{}) error {
@@ -28,6 +29,11 @@ func ToNum(value string, index int) int32 {
 // IntToChar 数字转为sgf识别字母
 func IntToChar(x int32) string {
 	return fmt.Sprintf("%s", string(x+97))
+}
+func CoorToXY(index, size int32) (int32, int32) {
+	y := int32(index / size)
+	x := int32(index % size)
+	return x, y
 }
 func NodeToString(node Node) string {
 	xChar := IntToChar(node.X)
@@ -58,6 +64,18 @@ func CoorToStr(x, y int32) string {
 	}
 	return fmt.Sprintf("[%s%s]", xChar, yChar)
 }
+func PointToStr(x, y int32) string {
+	xChar := IntToChar(x)
+	yChar := IntToChar(y)
+	if x == -1 {
+		xChar = "t"
+	}
+
+	if y == -1 {
+		yChar = "t"
+	}
+	return fmt.Sprintf("%s%s", xChar, yChar)
+}
 
 // SaveStringToPath 保存字符串到文件
 func SaveStringToPath(path string, content string) error {
@@ -87,7 +105,6 @@ func RemoveByPath(path string) error {
 	}
 	return nil
 }
-
 
 func ParseRegion(m string) []Region {
 	r1 := strings.Split(m, ";")
@@ -125,4 +142,65 @@ func ParseRegion(m string) []Region {
 		regions = append(regions, region)
 	}
 	return regions
+}
+
+// parseMove 解析AI节点
+func ParseMove(ss string, size int32) ([]Node, error) {
+	result := make([]Node, 0, 5)
+	pat := `\s+`
+	reg := regexp.MustCompile(pat)
+	list := reg.Split(ss, -1)
+	for _, v := range list {
+		if len(v) > 0 {
+			temp := strings.ToLower(string(v[0]))
+			if v == "PASS" {
+				pos := Node{
+					X: -1,
+					Y: -1,
+				}
+				result = append(result, pos)
+				continue
+			}
+			xr := []rune(temp)
+			xInt := xr[0]
+			if xInt > 105 {
+				xInt = xInt - 1
+			}
+
+			y, err := strconv.Atoi(string(v[1:]))
+			//utils.CheckError(err)
+			if err != nil {
+				return nil, err
+			}
+			yInt := size - int32(y)
+			pos := Node{
+				X: xInt - 97,
+				Y: yInt,
+			}
+			result = append(result, pos)
+		}
+	}
+	return result, nil
+}
+
+// ParseScore 解析AI Result
+func ParseResult(list []string) []string {
+	value := make([]string, 0, 5)
+	temp := ""
+	for i, v := range list {
+		v = strings.TrimSpace(v)
+		if len(v) > 0 {
+			if strings.Contains(v, "=") {
+				if i > 0 {
+					value = append(value, temp)
+					temp = ""
+				}
+				temp = strings.TrimSpace(strings.Replace(v, "=", "", -1))
+			} else {
+				temp = fmt.Sprintf("%s %s", temp, strings.TrimSpace(v))
+			}
+		}
+	}
+	value = append(value, temp)
+	return value
 }

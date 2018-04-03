@@ -23,8 +23,8 @@ func (k *Kifu) GoTo(move int) Position {
 	if move > k.NodeCount || move == -1 {
 		move = k.NodeCount
 	}
-	temp := *k.Root
-	node := &temp
+	//temp := *
+	node := k.Root
 	k.CurNode = node
 	for i := 0; i < move; i++ {
 		if len(node.Steup) > 0 {
@@ -35,11 +35,11 @@ func (k *Kifu) GoTo(move int) Position {
 		if len(node.Childrens) > node.LastSelect {
 			temp := node.GetChild(node.LastSelect)
 			pos.Move(temp.X, temp.Y, temp.C)
-			pos.ResetKO(temp.X, temp.Y, temp.C)
 			node = temp
 			k.CurNode = node
+			k.CurColor=-node.C
 		} else {
-			break;
+			break
 		}
 	}
 	k.CurPath = move
@@ -50,6 +50,18 @@ func (k *Kifu) GoTo(move int) Position {
 func (k *Kifu) Last() Position {
 	return k.GoTo(-1)
 }
+func (k *Kifu) Play(node Node) bool {
+	result, _ := k.CurPos.Play(node.X, node.Y, node.C)
+	if result {
+		n := k.CurNode.AppendChild()
+		n.X = node.X
+		n.Y = node.Y
+		n.C = node.C
+		k.CurNode = n
+		k.CurColor=-node.C
+	}
+	return result
+}
 func (k Kifu) ToSgf() string {
 	sss := fmt.Sprintf("(;SZ[%v]KM[%v]HA[%v]", k.Size, k.Komi, k.Handicap)
 	temp := *k.Root
@@ -59,6 +71,16 @@ func (k Kifu) ToSgf() string {
 	sss += ")"
 	return sss
 }
+func (k Kifu) WriteInfo(node *Node, s string) string {
+	for a, v := range node.Info {
+		ss := a
+		for _, str := range v {
+			ss = fmt.Sprintf("%s[%s]", ss, str)
+		}
+		s += ss
+	}
+	return s
+}
 func (k Kifu) WriteNode(node *Node, s string) string {
 	if (node.C != Empty) {
 		if node.C == B {
@@ -67,6 +89,7 @@ func (k Kifu) WriteNode(node *Node, s string) string {
 			s += fmt.Sprintf(";W%s", CoorToStr(node.X, node.Y))
 		}
 	}
+	s = k.WriteInfo(node, s)
 	s += getSetup(node.Steup, "")
 	cnt := len(node.Childrens)
 	if cnt == 1 {
@@ -84,14 +107,32 @@ func (k Kifu) WriteVarian(node *Node, s string) string {
 	s += ")"
 	return s
 }
+func (k Kifu) ToCleanSgf() string {
+	sss := "" // fmt.Sprintf("(;SZ[%v]KM[%v]HA[%v]", k.Size, k.Komi, k.Handicap)
+	temp := *k.CurNode
+	node := &temp
+	for {
+		moveStr := node.GetSgfMove()
+		sss = fmt.Sprintf("%s%s", moveStr, sss)
+		if node.Parent == nil {
+			break
+		}
+		node = node.Parent
+	}
+	ss := getSetup(node.Steup, "")
+	sss = fmt.Sprintf("(;SZ[%v]KM[%v]HA[%v]%s%s)", k.Size, k.Komi, k.Handicap, ss, sss)
+	return sss
+}
 func (k Kifu) ToCurSgf() string {
 	sss := "" // fmt.Sprintf("(;SZ[%v]KM[%v]HA[%v]", k.Size, k.Komi, k.Handicap)
 	temp := *k.CurNode
 	node := &temp
 	for {
-		sss = fmt.Sprintf("%s%s", node.GetSgfMove(), sss)
+		moveStr := node.GetSgfMove()
+		moveStr = k.WriteInfo(node, moveStr)
+		sss = fmt.Sprintf("%s%s", moveStr, sss)
 		if node.Parent == nil {
-			break;
+			break
 		}
 		node = node.Parent
 	}

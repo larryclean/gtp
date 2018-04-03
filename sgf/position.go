@@ -93,12 +93,36 @@ func (p *Position) Move(x, y, c int32) (bool, int) {
 	if cnt > 0 {
 		p.CapStones(nodes)
 	}
+	p.ResetKO(x, y, c)
 	if cnt == 1 {
 		p.HisNode = nodes[0]
 	}
 	return cnt > 0, cnt
 }
 
+// Move 落子
+func (p *Position) Play(x, y, c int32) (bool, int) {
+	newPos, _ := p.Clone()
+	newPos.SetPosition(x, y, c)
+	nodes := newPos.CheckDead(x, y, c)
+	cnt := len(nodes)
+	if cnt > 0 {
+		p.CapStones(nodes)
+	} else {
+		newPos.CalcDeadNotCap(x, y, c, nodes)
+		if len(nodes) > 0 {
+			return false, len(nodes)
+		}
+	}
+	p.SetPosition(x, y, c)
+	p.ResetKO(x, y, c)
+	if cnt == 1 {
+		p.HisNode = nodes[0]
+	}
+	p.SetPosition(x, y, c)
+
+	return true, cnt
+}
 func (p *Position) CapStones(nodes []Node) {
 	black := 0
 	white := 0

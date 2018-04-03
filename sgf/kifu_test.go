@@ -2,7 +2,6 @@ package sgf
 
 import (
 	"testing"
-	"fmt"
 )
 
 func TestKifu_ToSGF(t *testing.T) {
@@ -15,5 +14,18 @@ func TestKifu_ToSGF(t *testing.T) {
 		t.Error("kifu to sgf all move fail")
 	}
 
+}
+func TestKifu_Play(t *testing.T) {
+	kifu:=ParseSgf("(;SZ[19]AP[WGo.js:2]FF[4]GM[1]CA[UTF-8];B[ba];W[rn];B[ab])")
+	kifu.Last()
+	node:=Node{
+		X:0,
+		Y:0,
+		C:W,
+	}
+	result:=kifu.Play(node)
+	if result{
+		t.Error("move error")
+	}
 }
 
