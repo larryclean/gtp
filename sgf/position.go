@@ -124,6 +124,7 @@ func (p *Position) Play(x, y, c int32) (bool, int) {
 	return true, cnt
 }
 func (p *Position) CapStones(nodes []Node) {
+
 	black := 0
 	white := 0
 	for _, v := range nodes {
@@ -164,26 +165,26 @@ func (p *Position) CheckDead(x, y, c int32) []Node {
 	nodes := make([]Node, 0)
 	//up
 	if y > 0 && p.GetPosition(x, y-1) == int32(otherColor) {
-		p.CalcDeadNotCap(x, y-1, otherColor, nodes)
+		nodes=p.CalcDeadNotCap(x, y-1, otherColor, nodes)
 	}
 	//left
 	if x > 0 && p.GetPosition(x-1, y) == int32(otherColor) {
-		p.CalcDeadNotCap(x-1, y, otherColor, nodes)
+		nodes=p.CalcDeadNotCap(x-1, y, otherColor, nodes)
 	}
 	//down
 	if y < p.Size-1 && p.GetPosition(x, y+1) == int32(otherColor) {
-		p.CalcDeadNotCap(x, y+1, otherColor, nodes)
+		nodes=p.CalcDeadNotCap(x, y+1, otherColor, nodes)
 	}
 	//right
 	if x < p.Size-1 && p.GetPosition(x+1, y) == int32(otherColor) {
-		p.CalcDeadNotCap(x+1, y, otherColor, nodes)
+		nodes=p.CalcDeadNotCap(x+1, y, otherColor, nodes)
 	}
 
 	return nodes
 }
 
 //计算死子但不提子
-func (p *Position) CalcDeadNotCap(x, y, c int32, nodes []Node) {
+func (p *Position) CalcDeadNotCap(x, y, c int32, nodes []Node)[]Node {
 	temp_pos := NewPosition(p.Size)
 	isDead := true
 	temp_pos = p.FindAreaByC(temp_pos, x, y, c)
@@ -208,6 +209,7 @@ func (p *Position) CalcDeadNotCap(x, y, c int32, nodes []Node) {
 			}
 		}
 	}
+	return nodes
 }
 
 // FindAreaByC 查找区域连块逻辑
