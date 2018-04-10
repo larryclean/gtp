@@ -135,8 +135,8 @@ func (p *Position) CapStones(nodes []Node) {
 		}
 		p.SetPosition(v.X, v.Y, Empty)
 	}
-	p.BlackCap = p.BlackCap + black
-	p.WhiteCap = p.WhiteCap + white
+	p.BlackCap = p.BlackCap + white
+	p.WhiteCap = p.WhiteCap + black
 }
 
 // ResetKO 重置打劫
