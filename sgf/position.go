@@ -424,7 +424,7 @@ func (p Position) getNextMove(x, y, c int32, deadCount int, hisNode Node) (*Node
 	p.SetPosition(x, y, Empty)
 	return nil, 0
 }
-func (op Position) CalcCap(color int32) *Node {
+func (op Position) CalcCap(color int32) (*Node,int) {
 	p, _ := op.Clone()
 	deadCount := 0
 	result := &Node{}
@@ -482,7 +482,7 @@ func (op Position) CalcCap(color int32) *Node {
 		}
 	}
 	if deadCount > 0 {
-		return result
+		return result,deadCount
 	}
-	return nil
+	return nil,0
 }
