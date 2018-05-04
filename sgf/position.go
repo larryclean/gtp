@@ -67,7 +67,7 @@ func (p Position) Neighbar4(x, y int32) []Node {
 }
 
 func (p *Position) SetPosition(x, y, c int32) {
-	if x >= 0 && y >= 0 {
+	if x >= 0 && y >= 0 && x < p.Size-1 && y < p.Size-1 {
 		p.Schema[x*p.Size+y] = c
 	}
 
@@ -165,26 +165,26 @@ func (p *Position) CheckDead(x, y, c int32) []Node {
 	nodes := make([]Node, 0)
 	//up
 	if y > 0 && p.GetPosition(x, y-1) == int32(otherColor) {
-		nodes=p.CalcDeadNotCap(x, y-1, otherColor, nodes)
+		nodes = p.CalcDeadNotCap(x, y-1, otherColor, nodes)
 	}
 	//left
 	if x > 0 && p.GetPosition(x-1, y) == int32(otherColor) {
-		nodes=p.CalcDeadNotCap(x-1, y, otherColor, nodes)
+		nodes = p.CalcDeadNotCap(x-1, y, otherColor, nodes)
 	}
 	//down
 	if y < p.Size-1 && p.GetPosition(x, y+1) == int32(otherColor) {
-		nodes=p.CalcDeadNotCap(x, y+1, otherColor, nodes)
+		nodes = p.CalcDeadNotCap(x, y+1, otherColor, nodes)
 	}
 	//right
 	if x < p.Size-1 && p.GetPosition(x+1, y) == int32(otherColor) {
-		nodes=p.CalcDeadNotCap(x+1, y, otherColor, nodes)
+		nodes = p.CalcDeadNotCap(x+1, y, otherColor, nodes)
 	}
 
 	return nodes
 }
 
 //计算死子但不提子
-func (p *Position) CalcDeadNotCap(x, y, c int32, nodes []Node)[]Node {
+func (p *Position) CalcDeadNotCap(x, y, c int32, nodes []Node) []Node {
 	temp_pos := NewPosition(p.Size)
 	isDead := true
 	temp_pos = p.FindAreaByC(temp_pos, x, y, c)
@@ -424,7 +424,7 @@ func (p Position) getNextMove(x, y, c int32, deadCount int, hisNode Node) (*Node
 	p.SetPosition(x, y, Empty)
 	return nil, 0
 }
-func (op Position) CalcCap(color int32) (*Node,int) {
+func (op Position) CalcCap(color int32) (*Node, int) {
 	p, _ := op.Clone()
 	deadCount := 0
 	result := &Node{}
@@ -482,7 +482,7 @@ func (op Position) CalcCap(color int32) (*Node,int) {
 		}
 	}
 	if deadCount > 0 {
-		return result,deadCount
+		return result, deadCount
 	}
-	return nil,0
+	return nil, 0
 }

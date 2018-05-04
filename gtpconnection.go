@@ -56,7 +56,7 @@ func (self GTPConnection) Exec(cmd string) (string, error) {
 		}
 		result += line
 	}
-	res := strings.Split(result, "")
+	res := strings.Split(result, " ")
 	l := len(res)
 	if res[l-1] == "\n" {
 		result = strings.Join(res[:l-1], "")
