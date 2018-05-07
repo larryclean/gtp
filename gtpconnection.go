@@ -68,7 +68,7 @@ func (self GTPConnection) Exec(cmd string) (string, error) {
 		return "", errors.New(fmt.Sprintf("ERROR: GTP Command failed:%s", strings.Join(res[2:], "")))
 	}
 	if res[0] == "=" {
-		return strings.Join(res[2:], ""), nil
+		return strings.TrimSpace(strings.Join(res[1:], "")), nil
 	}
 	return "", errors.New(fmt.Sprintf("ERROR: Unrecognized answer: %s", result))
 }
