@@ -29,6 +29,10 @@ func ToNum(value string, index int) int32 {
 // IntToChar 数字转为sgf识别字母
 func IntToChar(x int32) string {
 	x=x+97
+	return fmt.Sprintf("%s", string(x))
+}
+func IntToAIChar(x int32) string{
+	x=x+97
 	if x>=105{
 		x++
 	}
