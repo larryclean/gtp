@@ -28,7 +28,11 @@ func ToNum(value string, index int) int32 {
 
 // IntToChar 数字转为sgf识别字母
 func IntToChar(x int32) string {
-	return fmt.Sprintf("%s", string(x+97))
+	x=x+97
+	if x>=105{
+		x++
+	}
+	return fmt.Sprintf("%s", string(x))
 }
 func CoorToXY(index, size int32) (int32, int32) {
 	y := int32(index / size)

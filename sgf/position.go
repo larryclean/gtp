@@ -67,7 +67,7 @@ func (p Position) Neighbar4(x, y int32) []Node {
 }
 
 func (p *Position) SetPosition(x, y, c int32) {
-	if x >= 0 && y >= 0 && x < p.Size-1 && y < p.Size-1 {
+	if x >= 0 && y >= 0 && x <= p.Size-1 && y <= p.Size-1 {
 		p.Schema[x*p.Size+y] = c
 	}
 
@@ -119,8 +119,6 @@ func (p *Position) Play(x, y, c int32) (bool, int) {
 	if cnt == 1 {
 		p.HisNode = nodes[0]
 	}
-	p.SetPosition(x, y, c)
-
 	return true, cnt
 }
 func (p *Position) CapStones(nodes []Node) {
@@ -399,13 +397,14 @@ func (p Position) PrintBoard() []string {
 		arr := make([]string, 0)
 		for j := int32(0); j < p.Size; j++ {
 			if p.GetPosition(j, i) == 1 {
-				arr = append(arr, "X")
+				arr = append(arr, fmt.Sprintf("%2s","X"))
 			} else if p.GetPosition(j, i) == -1 {
-				arr = append(arr, "O")
+				arr = append(arr, fmt.Sprintf("%2s","O"))
 			} else {
-				arr = append(arr, "-")
+				arr = append(arr, fmt.Sprintf("%2s","-"))
 			}
 		}
+		fmt.Println(strings.Join(arr, " "))
 		result = append(result, strings.Join(arr, " "))
 	}
 	return result

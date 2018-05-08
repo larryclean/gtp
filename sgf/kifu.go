@@ -3,9 +3,11 @@ package sgf
 import (
 	"fmt"
 	"strings"
+	"sync"
 )
 
 type Kifu struct {
+	mu   sync.RWMutex
 	Root      *Node
 	Size      int32
 	Handicap  int
@@ -59,6 +61,7 @@ func (k *Kifu) Play(node Node) bool {
 		n.C = node.C
 		k.CurNode = n
 		k.CurColor=-node.C
+		k.NodeCount++
 	}
 	return result
 }

@@ -73,3 +73,11 @@ func (k Node) GetSgfMove() string {
 		return ""
 	}
 }
+func (k Node) GetColor()string {
+	if k.C==1{
+		return "B"
+	}else if k.C==-1{
+		return "W"
+	}
+	return ""
+}
