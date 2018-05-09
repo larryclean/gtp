@@ -6,7 +6,7 @@ import (
 )
 
 func TestSgf(t *testing.T) {
-	kifu := sgf.ParseSgf("(;SZ[7])")
+	kifu := sgf.ParseSgf("(;SZ[19])")
 	kifu.Last()
 	kifu.CurPos.PrintBoard()
 	kifu.Play(sgf.Node{

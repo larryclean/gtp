@@ -392,22 +392,32 @@ func (p Position) GetStones() (blackList []string, whiteList []string) {
 }
 
 func (p Position) PrintBoard() []string {
-	result := make([]string, 0)
 	for i := int32(0); i < p.Size; i++ {
 		arr := make([]string, 0)
+		header:=make([]string, 0)
 		for j := int32(0); j < p.Size; j++ {
+
+			if j==0{
+				header=append(header, fmt.Sprintf("%2s",""))
+				arr = append(arr, fmt.Sprintf("%2d",p.Size-i))
+			}
+			if i==0{
+				header=append(header, fmt.Sprintf("%3s",strings.ToUpper(IntToAIChar(j))))
+			}
 			if p.GetPosition(j, i) == 1 {
-				arr = append(arr, fmt.Sprintf("%2s","X"))
+				arr = append(arr, fmt.Sprintf("%3s","X"))
 			} else if p.GetPosition(j, i) == -1 {
-				arr = append(arr, fmt.Sprintf("%2s","O"))
+				arr = append(arr, fmt.Sprintf("%3s","O"))
 			} else {
-				arr = append(arr, fmt.Sprintf("%2s","-"))
+				arr = append(arr, fmt.Sprintf("%3s","-"))
 			}
 		}
-		fmt.Println(strings.Join(arr, " "))
-		result = append(result, strings.Join(arr, " "))
+		if i==0{
+			fmt.Println(strings.Join(header,""))
+		}
+		fmt.Println(strings.Join(arr,""))
 	}
-	return result
+	return nil
 }
 func (p Position) getNextMove(x, y, c int32, deadCount int, hisNode Node) (*Node, int) {
 	kill, cnt := p.Move(x, y, c)
