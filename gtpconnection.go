@@ -37,6 +37,21 @@ func NewConnection(cmd string, args ...string) (*GTPConnection, error) {
 	return &conn, nil
 }
 
+// 完整PATH,自动解析为对应命令行
+func NewConnectionByPath(path string) (*GTPConnection, error) {
+	s1 := strings.Split(path, " ")
+	command := s1[0]
+	args := make([]string, 0)
+	if strings.Contains(path, "=") {
+		for i := 1; i < len(s1); i++ {
+			args = append(args, strings.Split(s1[i], "=")...)
+		}
+	} else {
+		args = append(args, s1[1:]...)
+	}
+	return NewConnection(command, args...)
+}
+
 // Exec 执行GTP命令
 func (self GTPConnection) Exec(cmd string) (string, error) {
 	self.infile.Write([]byte(fmt.Sprintf("%s \n", cmd)))
@@ -49,9 +64,9 @@ func (self GTPConnection) Exec(cmd string) (string, error) {
 		}
 		if line == "\n" {
 			break
-		}else if line=="\r\n"{
+		} else if line == "\r\n" {
 			break
-		}else if line=="\n"{
+		} else if line == "\n" {
 			break
 		}
 		result += line
