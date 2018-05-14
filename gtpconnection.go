@@ -62,11 +62,7 @@ func (self GTPConnection) Exec(cmd string) (string, error) {
 		if err2 != nil || io.EOF == err2 {
 			break
 		}
-		if line == "\n" {
-			break
-		} else if line == "\r\n" {
-			break
-		} else if line == "\n" {
+		if line == "\n" || line == "\r\n" {
 			break
 		}
 		result += line
