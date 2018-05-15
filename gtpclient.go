@@ -14,6 +14,7 @@ func NewGtpClient(conn *GTPConnection) *GTPClient {
 	util := GTPClient{}
 	util.conn = conn
 	ver, _ := conn.Exec("protocol_version")
+	fmt.Println(111)
 	if strings.Contains(ver, "ERROR") {
 		util.protocol_version = ver
 	} else {
@@ -23,7 +24,7 @@ func NewGtpClient(conn *GTPConnection) *GTPClient {
 }
 
 func (self GTPClient) KnowCommand(cmd string) (string, error) {
-	return self.conn.Exec(cmd)
+	return self.conn.Exec("know_command "+cmd)
 }
 
 func (self GTPClient) GenMove(color string) (string, error) {

@@ -13,7 +13,7 @@ func checkError(err error) {
 	}
 }
 func main() {
-	conn, err := gtp.NewConnection("./gnugo_mac", "--mode", "gtp")
+	conn, err := gtp.NewConnection("./leelaz.mac.0.15", "-g", "-w","/Users/larryliu/Documents/01-Project/gopath/src/github.com/larry-dev/gtp/example/network")
 	checkError(err)
 	client:=gtp.NewGtpClient(conn)
 	move,err:=client.GenMove("B")
