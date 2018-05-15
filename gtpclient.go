@@ -23,8 +23,15 @@ func NewGtpClient(conn *GTPConnection) *GTPClient {
 	return &util
 }
 
-func (self GTPClient) KnowCommand(cmd string) (string, error) {
-	return self.conn.Exec("known_command "+cmd)
+func (self GTPClient) KnowCommand(cmd string) (bool) {
+	value, err := self.conn.Exec("known_command " + cmd)
+	if err != nil {
+		return false
+	}
+	if strings.TrimSpace(value)!="true"{
+		return false
+	}
+	return true
 }
 
 func (self GTPClient) GenMove(color string) (string, error) {

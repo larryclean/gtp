@@ -16,6 +16,10 @@ func main() {
 	conn, err := gtp.NewConnection("./leelaz.mac.0.15", "-g", "-w","/Users/larryliu/Documents/01-Project/gopath/src/github.com/larry-dev/gtp/example/network")
 	checkError(err)
 	client:=gtp.NewGtpClient(conn)
+	value:=client.KnowCommand("kgs-time_settings")
+	if value{
+		fmt.Println("支持kgs-time_settings")
+	}
 	move,err:=client.GenMove("B")
 	fmt.Println(move,err)
 	move,err=client.GenMove("W")
