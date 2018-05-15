@@ -14,7 +14,6 @@ func NewGtpClient(conn *GTPConnection) *GTPClient {
 	util := GTPClient{}
 	util.conn = conn
 	ver, _ := conn.Exec("protocol_version")
-	fmt.Println(111)
 	if strings.Contains(ver, "ERROR") {
 		util.protocol_version = ver
 	} else {
@@ -28,7 +27,7 @@ func (self GTPClient) KnowCommand(cmd string) (bool) {
 	if err != nil {
 		return false
 	}
-	if strings.TrimSpace(value) != "true" {
+	if strings.ToLower(strings.TrimSpace(value)) != "true" {
 		return false
 	}
 	return true
