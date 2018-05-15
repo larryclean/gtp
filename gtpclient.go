@@ -24,7 +24,7 @@ func NewGtpClient(conn *GTPConnection) *GTPClient {
 }
 
 func (self GTPClient) KnowCommand(cmd string) (string, error) {
-	return self.conn.Exec("know_command "+cmd)
+	return self.conn.Exec("known_command "+cmd)
 }
 
 func (self GTPClient) GenMove(color string) (string, error) {
