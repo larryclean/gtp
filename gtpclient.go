@@ -91,7 +91,7 @@ func (self GTPClient) PrintSgf() (string, error) {
 func (self GTPClient) TimeSetting(baseTime, byoTime, byoStones int) (string, error) {
 	return self.conn.Exec(fmt.Sprintf("time_settings %d %d %d", baseTime, byoTime, byoStones))
 }
-func (self GTPClient) KGSTimeSetting(mainTime, readTime, readLimit int32) (string, error) {
+func (self GTPClient) KGSTimeSetting(mainTime, readTime, readLimit int) (string, error) {
 	return self.conn.Exec(fmt.Sprintf("kgs-time_settings byoyomi %d %d %d", mainTime, readTime, readLimit))
 }
 func (self GTPClient) FinalScore() (string, error) {
