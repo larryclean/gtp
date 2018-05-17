@@ -392,6 +392,7 @@ func (p Position) GetStones() (blackList []string, whiteList []string) {
 }
 
 func (p Position) PrintBoard() []string {
+	rows:=make([]string,0)
 	for i := int32(0); i < p.Size; i++ {
 		arr := make([]string, 0)
 		header:=make([]string, 0)
@@ -413,10 +414,11 @@ func (p Position) PrintBoard() []string {
 			}
 		}
 		if i==0{
-			fmt.Println(strings.Join(header,""))
+			rows=append(rows,fmt.Sprintf("%s\n",strings.Join(header,"")))
 		}
-		fmt.Println(strings.Join(arr,""))
+		rows=append(rows,fmt.Sprintf("%s\n",strings.Join(arr,"")))
 	}
+	fmt.Println(rows)
 	return nil
 }
 func (p Position) getNextMove(x, y, c int32, deadCount int, hisNode Node) (*Node, int) {
