@@ -418,7 +418,7 @@ func (p Position) PrintBoard() []string {
 		}
 		rows=append(rows,fmt.Sprintf("%s\n",strings.Join(arr,"")))
 	}
-	fmt.Println(rows)
+	fmt.Println(strings.Join(rows,""))
 	return nil
 }
 func (p Position) getNextMove(x, y, c int32, deadCount int, hisNode Node) (*Node, int) {
