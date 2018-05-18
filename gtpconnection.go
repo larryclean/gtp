@@ -42,12 +42,10 @@ func NewConnectionByPath(path string) (*GTPConnection, error) {
 	s1 := strings.Split(path, " ")
 	command := s1[0]
 	args := make([]string, 0)
-	if strings.Contains(path, "=") {
-		for i := 1; i < len(s1); i++ {
-			args = append(args, strings.Split(s1[i], "=")...)
+	if len(s1)>1{
+		for _,v:=range s1[1:]{
+			args = append(args, strings.TrimSpace(v))
 		}
-	} else {
-		args = append(args, s1[1:]...)
 	}
 	return NewConnection(command, args...)
 }
