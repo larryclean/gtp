@@ -41,11 +41,7 @@ func (self GTPClient) GenMove(color string) (string, error) {
 	} else if color == "W" {
 		command = "white"
 	}
-	if self.protocol_version == "1" {
-		command = "genmove_" + command
-	} else {
-		command = "genmove " + command
-	}
+	command = "genmove " + command
 	return self.conn.Exec(command)
 }
 func (self GTPClient) Move(color, coor string) (string, error) {
