@@ -30,7 +30,7 @@ func NewConnection(cmd string, args ...string) (*GTPConnection, error) {
 	}
 	conn.infile = inf
 	conn.outfile = outf
-	err:=conn.cmd.Start()
+	err=conn.cmd.Start()
 	if err!=nil{
 		return &conn,err
 	}
