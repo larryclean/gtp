@@ -44,6 +44,12 @@ func (self GTPClient) GenMove(color string) (string, error) {
 	command = "genmove " + command
 	return self.conn.Exec(command)
 }
+func (self GTPClient) Komi(komi float32) (string, error) {
+	return self.conn.Exec(fmt.Sprintf("komi %d", komi))
+}
+func (self GTPClient) Handicap(handicap int)(string, error){
+	return self.conn.Exec(fmt.Sprintf("fixed_handicap %d", handicap))
+}
 func (self GTPClient) Move(color, coor string) (string, error) {
 	color = strings.ToUpper(color)
 	command := "black"

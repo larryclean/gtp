@@ -53,6 +53,9 @@ func (k *Kifu) Last() Position {
 	return k.GoTo(-1)
 }
 func (k *Kifu) Play(node Node) bool {
+	if k.CurPos.GetPosition(node.X,node.Y)!=0 || !k.CurPos.CheckKO(node.X,node.Y,node.C,1){
+		return false
+	}
 	result, _ := k.CurPos.Play(node.X, node.Y, node.C)
 	if result {
 		n := k.CurNode.AppendChild()

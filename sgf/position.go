@@ -109,7 +109,7 @@ func (p *Position) Play(x, y, c int32) (bool, int) {
 	if cnt > 0 {
 		p.CapStones(nodes)
 	} else {
-		newPos.CalcDeadNotCap(x, y, c, nodes)
+		nodes:=newPos.CalcDeadNotCap(x, y, c, nodes)
 		if len(nodes) > 0 {
 			return false, len(nodes)
 		}
