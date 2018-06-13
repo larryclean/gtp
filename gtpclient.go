@@ -8,11 +8,15 @@ import (
 type GTPClient struct {
 	conn             *GTPConnection
 	protocol_version string
+	Result string
 }
 
 func NewGtpClient(conn *GTPConnection) *GTPClient {
 	util := GTPClient{}
 	util.conn = conn
+	go conn.GetOtherInfo(func(r string) {
+		util.Result=r
+	})
 	ver, _ := conn.Exec("protocol_version")
 	if strings.Contains(ver, "ERROR") {
 		util.protocol_version = ver
@@ -47,7 +51,10 @@ func (self GTPClient) GenMove(color string) (string, error) {
 func (self GTPClient) Komi(komi float32) (string, error) {
 	return self.conn.Exec(fmt.Sprintf("komi %d", komi))
 }
-func (self GTPClient) Handicap(handicap int)(string, error){
+func (self GTPClient) Custom(com string) (string, error) {
+	return self.conn.Exec(com)
+}
+func (self GTPClient) Handicap(handicap int) (string, error) {
 	return self.conn.Exec(fmt.Sprintf("fixed_handicap %d", handicap))
 }
 func (self GTPClient) Move(color, coor string) (string, error) {
@@ -101,8 +108,4 @@ func (self GTPClient) FinalScore() (string, error) {
 }
 func (self GTPClient) Quit() (string, error) {
 	return self.conn.Exec("Quit")
-}
-
-func (self GTPClient) SendCmd(cmd string) (string, error) {
-	return self.conn.Exec(cmd)
 }

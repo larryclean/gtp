@@ -28,12 +28,12 @@ func ToNum(value string, index int) int32 {
 
 // IntToChar 数字转为sgf识别字母
 func IntToChar(x int32) string {
-	x=x+97
+	x = x + 97
 	return fmt.Sprintf("%s", string(x))
 }
-func IntToAIChar(x int32) string{
-	x=x+97
-	if x>=105{
+func IntToAIChar(x int32) string {
+	x = x + 97
+	if x >= 105 {
 		x++
 	}
 	return fmt.Sprintf("%s", string(x))
@@ -211,4 +211,54 @@ func ParseResult(list []string) []string {
 	}
 	value = append(value, temp)
 	return value
+}
+
+// 解析leelazero 数据
+func ParseBranch(log string) map[string]interface{} {
+	lines := strings.Split(log, "\n")
+	result := make(map[string]interface{})
+	for _, v := range lines {
+		if strings.Contains(v, "->") {
+			first := strings.Split(v, "->")
+			//选点
+			result["select"] = strings.TrimSpace(first[0])
+			second := strings.Split(strings.TrimSpace(first[1]), "(")
+			// 模拟次数
+			result["times"] = strings.TrimSpace(second[0])
+			// 胜利
+			result["wine_rate"] = strings.TrimSpace(strings.Replace(strings.Replace(second[1], "V:", "", -1), "%)", "", -1))
+			three := strings.Split(strings.Replace(second[2], "N:", "", -1), "%)")
+			// 策略网络概率
+			result["playout"] = strings.TrimSpace(three[0])
+			four := strings.Fields(strings.TrimSpace(three[1]))
+			if len(four) > 0 && four[0] == "PV:" {
+				result["branch"] = four[1:]
+			}
+		}
+	}
+	return result
+}
+//解析leelazero heatmap
+func ParseHeatMap(log string) ([362]float64, float64) {
+	position := [362]float64{}
+	wineRate := 0.0
+	for x, v := range strings.Split(log, "\n") {
+		lines := strings.Fields(v)
+		switch len(lines) {
+		case 19:
+			for y, p := range lines {
+				pp, _ := strconv.ParseFloat(p, 64)
+				position[x+y*19] = pp
+			}
+		case 2:
+			if lines[0] == "pass:" {
+				pp, _ := strconv.ParseFloat(lines[1], 64)
+				position[361] = pp
+			} else if lines[0] == "winrate:" {
+				rate, _ := strconv.ParseFloat(lines[1], 64)
+				wineRate = rate
+			}
+		}
+	}
+	return position, wineRate
 }
